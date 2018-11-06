@@ -21,7 +21,7 @@ class Piece {
                     ]
                 } else {
 
-                    this.moveset = current.moveset;
+                    this.moveset = Array.prototype.slice.call(current.moveset);
                 }
                 if (current.hits == "moveset") {
                     this.hits = current.moveset;
