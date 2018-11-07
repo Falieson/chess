@@ -49,7 +49,8 @@ class Board {
         if (this.lastSelected) {
             this.possibleMoves = [];
             translate(this.lastSelectedLocation[0] * SIZE, this.lastSelectedLocation[1] * SIZE);
-            noStroke();
+            stroke(255);
+            strokeWeight(2);
             fill(153, 20, 20);
             for (let r of this.lastSelected.moveset) {
                 if (r[0] != 8 && r[1] != 8) {
@@ -59,12 +60,12 @@ class Board {
                         break;
                     }
 
-		    if(this.lastSelectedLocation[0] + r[0] < 0 || this.lastSelectedLocation[0] + r[0] > 7 || this.lastSelectedLocation[1] + r[1] < 0 || this.lastSelectedLocation[1] + r[1]> 7){
-			continue;
-		    }
-		    if(this.pieces[this.lastSelectedLocation[0] + r[0]][this.lastSelectedLocation[1] + r[1]] && this.lastSelected.black == this.pieces[this.lastSelectedLocation[0] + r[0]][this.lastSelectedLocation[1] + r[1]].black){
-			continue;
-		    }
+                    if (this.lastSelectedLocation[0] + r[0] < 0 || this.lastSelectedLocation[0] + r[0] > 7 || this.lastSelectedLocation[1] + r[1] < 0 || this.lastSelectedLocation[1] + r[1] > 7) {
+                        continue;
+                    }
+                    if (this.pieces[this.lastSelectedLocation[0] + r[0]][this.lastSelectedLocation[1] + r[1]] && this.lastSelected.black == this.pieces[this.lastSelectedLocation[0] + r[0]][this.lastSelectedLocation[1] + r[1]].black) {
+                        continue;
+                    }
                     this.possibleMoves.push([this.lastSelectedLocation[0] + r[0], this.lastSelectedLocation[1] + r[1]]);
                     rect(r[0] * SIZE, r[1] * SIZE, SIZE, SIZE);
                 }
@@ -73,14 +74,15 @@ class Board {
                 if ((r[0] == 8 && r[1] == 8) || (r[0] == 8 && r[1] == -8) || (r[0] == -8 && r[1] == 8) || (r[0] == -8 && r[1] == -8) || (r[0] == 0 && (r[1] == 8 || r[1] == -8)) || (r[1] == 0 && (r[0] == 8 || r[0] == -8))) {
                     for (let i = 1; i < 8; i++) {
                         let breaking = false;
-                        if (this.lastSelectedLocation[0] + floor(r[0] / 8) * i > 7 || this.lastSelectedLocation[0] + floor(r[0] / 8) * i < 0) {
+                        if (this.lastSelectedLocation[0] + (r[0] / 8) * i > 7 || this.lastSelectedLocation[1] + (r[1] / 8) * i > 7) {
                             break;
                         }
-                        if (this.lastSelectedLocation[1] + floor(r[1] / 8) * i > 7 || this.lastSelectedLocation[1] + floor(r[1] / 8) * i < 0) {
+                        if (this.lastSelectedLocation[0] + (r[0] / 8) * i < 0 || this.lastSelectedLocation[1] + (r[1] / 8) * i < 0) {
+                            //console.log("Too small for u");
                             break;
                         }
-                        if (this.pieces[this.lastSelectedLocation[0] + floor(r[0] / 8) * i][this.lastSelectedLocation[1] + floor(r[1] / 8) * i] != undefined) { // && this.canHit(this.lastSelectedLocation[0], this.lastSelectedLocation[1], this.lastSelectedLocation[0] + floor(r[0] / 8) * i, this.lastSelectedLocation[1] + floor(r[1] / 8) * i)) {
-                            if (this.lastSelected.black == this.pieces[this.lastSelectedLocation[0] + floor(r[0] / 8) * i][this.lastSelectedLocation[1] + floor(r[1] / 8) * i].black) {
+                        if (this.pieces[this.lastSelectedLocation[0] + (r[0] / 8) * i][this.lastSelectedLocation[1] + (r[1] / 8) * i] != undefined) { // && this.canHit(this.lastSelectedLocation[0], this.lastSelectedLocation[1], this.lastSelectedLocation[0] + floor(r[0] / 8) * i, this.lastSelectedLocation[1] + floor(r[1] / 8) * i)) {
+                            if (this.lastSelected.black == this.pieces[this.lastSelectedLocation[0] + (r[0] / 8) * i][this.lastSelectedLocation[1] + (r[1] / 8) * i].black) {
                                 break;
                             }
                             breaking = true;
@@ -92,34 +94,35 @@ class Board {
                         }
                     }
                 }
-                
 
-            if (this.lastSelectedLocation[1] + 1 < 8 && this.lastSelectedLocation[0] - 1 >= 0 && this.lastSelected.pieceType == "Pawn" && this.lastSelected.black && this.pieces[this.lastSelectedLocation[0] - 1][this.lastSelectedLocation[1] + 1] != undefined) {
-		if(this.lastSelected.black == this.pieces[this.lastSelectedLocation[0] - 1][this.lastSelectedLocation[1] + 1].black){
-                	this.possibleMoves.push([this.lastSelectedLocation[0] - 1, this.lastSelectedLocation[1] + 1]);
-                	rect((-1) * SIZE, (1) * SIZE, SIZE, SIZE);		    
-		}
-            }
-            if (this.lastSelectedLocation[1] + 1 < 8 && (this.lastSelectedLocation[0] + 1) < 8 && this.lastSelected.pieceType == "Pawn" && this.lastSelected.black && this.pieces[this.lastSelectedLocation[0] + 1][this.lastSelectedLocation[1] + 1] != undefined) {
-		if(this.lastSelected.black ==  this.pieces[this.lastSelectedLocation[0] + 1][this.lastSelectedLocation[1] + 1].black){
-                	this.possibleMoves.push([this.lastSelectedLocation[0] + 1, this.lastSelectedLocation[1] + 1]);
-                	rect((1) * SIZE, (1) * SIZE, SIZE, SIZE);
-		}
-            }
-            if (this.lastSelectedLocation[1] - 1 >= 0 && this.lastSelectedLocation[0] - 1 >= 0 && this.lastSelected.pieceType == "Pawn" && !this.lastSelected.black && this.pieces[this.lastSelectedLocation[0] - 1][this.lastSelectedLocation[1] - 1] != undefined) {
-		if(this.lastSelected.black == this.pieces[this.lastSelectedLocation[0] - 1][this.lastSelectedLocation[1] - 1].black){
-                	this.possibleMoves.push([this.lastSelectedLocation[0] - 1, this.lastSelectedLocation[1] - 1]);
-                	rect((-1) * SIZE, (-1) * SIZE, SIZE, SIZE);
-		}
-            }
-            if (this.lastSelectedLocation[1] - 1 >= 0 && (this.lastSelectedLocation[0] + 1) < 8 && this.lastSelected.pieceType == "Pawn" && !this.lastSelected.black && this.pieces[this.lastSelectedLocation[0] + 1][this.lastSelectedLocation[1] - 1] != undefined) {
-		if(this.lastSelected.black == this.pieces[this.lastSelectedLocation[0] + 1][this.lastSelectedLocation[1] - 1].black){
-                	this.possibleMoves.push([this.lastSelectedLocation[0] + 1, this.lastSelectedLocation[1] - 1]);
-                	rect((1) * SIZE, (-1) * SIZE, SIZE, SIZE);
-		}
-            }
 
+                if (this.lastSelectedLocation[1] + 1 < 8 && this.lastSelectedLocation[0] - 1 >= 0 && this.lastSelected.pieceType == "Pawn" && this.lastSelected.black && this.pieces[this.lastSelectedLocation[0] - 1][this.lastSelectedLocation[1] + 1] != undefined) {
+                    if (this.lastSelected.black != this.pieces[this.lastSelectedLocation[0] - 1][this.lastSelectedLocation[1] + 1].black) {
+                        this.possibleMoves.push([this.lastSelectedLocation[0] - 1, this.lastSelectedLocation[1] + 1]);
+                        rect((-1) * SIZE, (1) * SIZE, SIZE, SIZE);
+                    }
+                }
+                if (this.lastSelectedLocation[1] + 1 < 8 && (this.lastSelectedLocation[0] + 1) < 8 && this.lastSelected.pieceType == "Pawn" && this.lastSelected.black && this.pieces[this.lastSelectedLocation[0] + 1][this.lastSelectedLocation[1] + 1] != undefined) {
+                    if (this.lastSelected.black != this.pieces[this.lastSelectedLocation[0] + 1][this.lastSelectedLocation[1] + 1].black) {
+                        this.possibleMoves.push([this.lastSelectedLocation[0] + 1, this.lastSelectedLocation[1] + 1]);
+                        rect((1) * SIZE, (1) * SIZE, SIZE, SIZE);
+                    }
+                }
+                if (this.lastSelectedLocation[1] - 1 >= 0 && this.lastSelectedLocation[0] - 1 >= 0 && this.lastSelected.pieceType == "Pawn" && !this.lastSelected.black && this.pieces[this.lastSelectedLocation[0] - 1][this.lastSelectedLocation[1] - 1] != undefined) {
+                    if (this.lastSelected.black != this.pieces[this.lastSelectedLocation[0] - 1][this.lastSelectedLocation[1] - 1].black) {
+                        this.possibleMoves.push([this.lastSelectedLocation[0] - 1, this.lastSelectedLocation[1] - 1]);
+                        rect((-1) * SIZE, (-1) * SIZE, SIZE, SIZE);
+                    }
+                }
+                if (this.lastSelectedLocation[1] - 1 >= 0 && (this.lastSelectedLocation[0] + 1) < 8 && this.lastSelected.pieceType == "Pawn" && !this.lastSelected.black && this.pieces[this.lastSelectedLocation[0] + 1][this.lastSelectedLocation[1] - 1] != undefined) {
+                    if (this.lastSelected.black != this.pieces[this.lastSelectedLocation[0] + 1][this.lastSelectedLocation[1] - 1].black) {
+                        this.possibleMoves.push([this.lastSelectedLocation[0] + 1, this.lastSelectedLocation[1] - 1]);
+                        rect((1) * SIZE, (-1) * SIZE, SIZE, SIZE);
+                    }
+                }
+            }
             translate(-this.lastSelectedLocation[0] * SIZE, -this.lastSelectedLocation[1] * SIZE);
+
         }
         for (let i = 0; i < this.pieces.length; i++) {
             for (let n = 0; n < this.pieces[0].length; n++) {
@@ -131,6 +134,10 @@ class Board {
                 }
             }
         }
+    }
+
+    rochade() {
+
     }
 
     possibleMove(x, y) {
