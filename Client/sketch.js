@@ -29,6 +29,7 @@ function draw() {
 
     if (!board.currentlyWhite) {
         algo.move();
+        console.log("Generating ai moves: " + algo.tree.bestMove + " " + algo.tree.bestMove.length);
         loadBoard(algo.tree.bestMove.data);
     }
 
