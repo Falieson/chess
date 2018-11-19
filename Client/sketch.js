@@ -1,8 +1,10 @@
 const SIZE = 90;
 let board;
+let history;
 let pieceJSON;
 let sprite;
 let mainSprite;
+let algo;
 
 let playerTurn = true;
 
@@ -12,16 +14,25 @@ function preload() {
 }
 
 function setup() {
+    console.log("Setup");
     createCanvas(8 * SIZE, 8 * SIZE);
     mainSprite = new Sprite();
     mainSprite.resize(SIZE);
     board = new Board(false);
+    algo = new Algorithm();
 }
 
 function draw() {
     background(51);
 
     board.draw();
+
+    if (!board.currentlyWhite) {
+        algo.move();
+        console.log("Generating ai moves: " + algo.tree.bestMove + " " + algo.tree.bestMove.length);
+        loadBoard(algo.tree.bestMove[floor(Math.random() * (algo.tree.bestMove.length - 1))].data);
+        board.original = true;
+    }
 
 
 }
@@ -32,4 +43,14 @@ function mousePressed() {
         board.selectPiece(mouseX, mouseY);
         playerTurn = !board.moved;
     }
+}
+
+function loadBoard(newBoard) {
+    history = board;
+    board = newBoard;
+}
+
+function resetBoard() {
+    board = history;
+    history = undefined;
 }
