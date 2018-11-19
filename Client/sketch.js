@@ -30,7 +30,7 @@ function draw() {
     if (!board.currentlyWhite) {
         algo.move();
         console.log("Generating ai moves: " + algo.tree.bestMove + " " + algo.tree.bestMove.length);
-        loadBoard(algo.tree.bestMove.data);
+        loadBoard(algo.tree.bestMove[floor(Math.random() * (algo.tree.bestMove.length - 1))].data);
     }
 
 
