@@ -12,6 +12,9 @@ class Board {
             this.cmW = c.cmW;
             this.cmB = c.cmB;
 
+            this.kingWhite = c.kingWhite.slice();
+            this.kingBlack = c.kingBlack.slice();
+
             this.original = false;
 
             this.pieces = c.pieces.map(function(arr) {
@@ -61,6 +64,9 @@ class Board {
         this.pieces[5][7] = new Piece("Bishop", false);
         this.pieces[6][7] = new Piece("Knight", false);
         this.pieces[7][7] = new Piece("Rook", false);
+
+        this.kingWhite = this.getKing(true);
+        this.kingBlack = this.getKing(false);
     }
 
     draw() {
@@ -334,36 +340,38 @@ class Board {
         if (this.original) {
             this.pieces[x][y].movesMade++;
         }
+
+        if (this.pieces[x][y].pieceType == "King") {
+            if (this.pieces[x][y].black) {
+                this.kingBlack = [tx, ty];
+            } else {
+                this.kingWhite = [tx, ty];
+            }
+        }
         this.pieces[tx][ty] = this.pieces[x][y];
         this.pieces[x][y] = undefined;
         this.checkm8(!dontCheckM8);
     }
 
-    checkm8(testm8) {
-        this.checkMoves = {};
-        let bK;
-        let wK;
-
-        let x = 0;
-        let y = 0;
-        for (let a of this.pieces) {
-            for (let b of a) {
-                if (b == undefined) {
-                    y++;
-                    continue;
-                }
-                if (b.pieceType == "King") {
-                    if (b.black) {
-                        bK = [x, y];
-                    } else {
-                        wK = [x, y];
+    getKing(white) {
+        for (let i = 0; i < this.pieces.length; i++) {
+            for (let n = 0; n < this.pieces[0].length; n++) {
+                if (this.pieces[i][n] && this.pieces[i][n].pieceType === "King") {
+                    if (white && !this.pieces[i][n].black) {
+                        return [i, n];
+                    } else if (!white && this.pieces[i][n].black) {
+                        return [i, n];
                     }
                 }
-                y++;
             }
-            x++;
-            y = 0;
         }
+        throw ("No " + white ? "white" : "black" + " king found!!");
+    }
+
+    checkm8(testm8) {
+        this.checkMoves = {};
+        let bK = this.kingBlack;
+        let wK = this.kingWhite;
 
         for (let i = 1; i < 8; i++) {
             //White
