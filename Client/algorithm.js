@@ -44,13 +44,15 @@ class Tree {
     }
 
     getMax(node, alpha, beta, depth) {
-        let bestMove;
+        let bestMove = [];
 
         for (let n of node.nodes) {
             let score = this.alphaBetaPruning(n, alpha, beta, depth - 1);
             if (score > alpha) {
                 alpha = score;
-                bestMove = n;
+                bestMove = [n];
+            } else if (score == alpha) {
+                bestMove.push(n);
             }
 
             if (alpha >= beta) {
