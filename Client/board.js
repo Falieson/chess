@@ -104,6 +104,7 @@ class Board {
     }
 
     getPossibleMoves(x, y, draw, ret, testm8) {
+
         let result = [];
 
         if (!testm8) {
@@ -239,11 +240,34 @@ class Board {
                 }
             }
         }
+
+        if(!this.original && (this.pieces[x][y].pieceType == "King" || this.pieces[x][y].pieceType == "Rook")){
+            //console.log("Check for castling");
+            let castlingMoves = this.possCastling();
+            for(let a of castlingMoves){
+                result.push(a);
+            }
+        }
+
         if (!ret) {
             this.possibleMoves = result;
         } else {
             return result;
         }
+    }
+
+    possCastling(){
+        let y = this.currentlyWhite ? 7: 0;
+        let moves = [];
+
+        if(this.castling(false, 4,y,0,y)){
+            moves.push(["c", 4, y, 0, y]);
+        }
+        if(this.castling(false, 4, y, 7, y)){
+            moves.push(["c", 4, y, 7, y]);
+        }
+
+        return moves;
     }
 
     castling(move, kX, kY, rX, rY) {
@@ -368,8 +392,8 @@ class Board {
         throw ("No " + white ? "white" : "black" + " king found!!");
     }
 
-    checkm8(testm8) {
-        this.checkMoves = {};
+    checkm8(testm8, ret) {
+        let checkMoves = {};
         let bK = this.kingBlack;
         let wK = this.kingWhite;
 
@@ -508,10 +532,10 @@ class Board {
                         if (!tmpCopy.chW) {
                             //console.log("Not m8");
                             m8 = false;
-                            if (!this.checkMoves[i + "," + n]) {
-                                this.checkMoves[i + "," + n] = [];
+                            if (!checkMoves[i + "," + n]) {
+                                checkMoves[i + "," + n] = [];
                             }
-                            this.checkMoves[i + "," + n].push([a[0], a[1]]);
+                            checkMoves[i + "," + n].push([a[0], a[1]]);
                         }
                         //console.table(tmpCopy.pieces);
                         tmpCopy.currentlyWhite = true;
@@ -547,10 +571,10 @@ class Board {
                             //console.log(tmpCopy);
                             //console.log("Not m8, because move to " + a[0] + " " + a[1] + " possible.");
                             m8 = false;
-                            if (!this.checkMoves[i + "," + n]) {
-                                this.checkMoves[i + "," + n] = [];
+                            if (!checkMoves[i + "," + n]) {
+                                checkMoves[i + "," + n] = [];
                             }
-                            this.checkMoves[i + "," + n].push([a[0], a[1]]);
+                            checkMoves[i + "," + n].push([a[0], a[1]]);
                         }
                         //console.table(tmpCopy.pieces);
                         tmpCopy.currentlyWhite = false;
@@ -562,6 +586,12 @@ class Board {
                 //console.log("Checkmate, white won");
                 this.cmB = true;
             }
+        }
+
+        if(ret){
+            return checkMoves;
+        } else {
+            this.checkMoves = checkMoves;
         }
 
     }
