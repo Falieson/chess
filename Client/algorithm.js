@@ -103,6 +103,7 @@ class Node {
 
                         }
                         b.move(i, n, a[0], a[1]);
+
                         if (b.isEqual(b.pieces, data.pieces)) {
                             //console.log("same");
                             continue;

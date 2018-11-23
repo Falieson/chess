@@ -104,7 +104,6 @@ class Board {
     }
 
     getPossibleMoves(x, y, draw, ret, testm8) {
-
         let result = [];
 
         if (!testm8) {
@@ -364,7 +363,6 @@ class Board {
         if (this.original) {
             this.pieces[x][y].movesMade++;
         }
-
         if (this.pieces[x][y].pieceType == "King") {
             if (this.pieces[x][y].black) {
                 this.kingBlack = [tx, ty];
@@ -587,7 +585,6 @@ class Board {
                 this.cmB = true;
             }
         }
-
         if(ret){
             return checkMoves;
         } else {
