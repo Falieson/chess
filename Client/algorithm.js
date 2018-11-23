@@ -5,13 +5,13 @@ constants.MAX = 9999;
 
 class Algorithm {
     constructor() {
-        this.tree = new Tree(2);
+        this.tree = new Tree(3);
         console.log("Dede, tree done");
         //console.log(this.alphabeta(this.tree.initialState, 2, -Infinity, Infinity, true));
     }
 
     rebuildTree() {
-        this.tree = new Tree(2);
+        this.tree = new Tree(3);
     }
 
     move() {
@@ -89,15 +89,21 @@ class Node {
         this.recLevel = recLevel;
         this.data = data;
         this.nodes = [];
+
         for (let i = 0; i < 8; i++) {
             for (let n = 0; n < 8; n++) {
                 if (data.pieces[i][n]) {
-                    for (let a of data.getPossibleMoves(i, n, false, true)) {
+                    if(data.chB && !data.currentlyWhite){
+                        console.log("Check Black");
+                        console.log(data);
+                        debugger;
                         let b = new Board(false, data);
+                        for(let a of data.checkm8(true, true)[i + "," + n]){
+                            let b = new Board(false, data);
+
+                        }
                         b.move(i, n, a[0], a[1]);
-                        // if (b.cmW || b.cmB) {
-                        //     continue;
-                        // }
+
                         if (b.isEqual(b.pieces, data.pieces)) {
                             //console.log("same");
                             continue;
@@ -108,6 +114,34 @@ class Node {
                         } else {
                             //console.log("EN");
                             this.nodes.push(new EndNode(b));
+                        }
+
+                    } else {
+                        for (let a of data.getPossibleMoves(i, n, false, true)) {
+                            let b = new Board(false, data);
+                            if(a[0] === "c"){
+                                //console.log("Castling possibkle");
+                                b.castling(true, a[1], a[2], a[3], a[4]);
+                                if(!b.isEqual(b.pieces, data.pieces)){
+                                    this.nodes.push(new Node(tree, b, this, recLevel + 1));
+                                }
+                                continue;
+                            }
+                            b.move(i, n, a[0], a[1]);
+                            // if (b.cmW || b.cmB) {
+                            //     continue;
+                            // }
+                            if (b.isEqual(b.pieces, data.pieces)) {
+                                //console.log("same");
+                                continue;
+                            }
+                            if (recLevel < tree.recLevel - 1 && !b.cmW && !b.cmB) {
+                                //console.log("NN");
+                                this.nodes.push(new Node(tree, b, this, recLevel + 1));
+                            } else {
+                                //console.log("EN");
+                                this.nodes.push(new EndNode(b));
+                            }
                         }
                     }
                 }
