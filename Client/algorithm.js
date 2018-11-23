@@ -94,16 +94,15 @@ class Node {
             for (let n = 0; n < 8; n++) {
                 if (data.pieces[i][n]) {
                     if(data.chB && !data.currentlyWhite){
-                        console.log("Check Black");
-                        console.log(data);
-                        debugger;
+                        //console.log("Check Black");
+                        //console.log(data);
+                        //debugger;
                         let b = new Board(false, data);
                         for(let a of data.checkm8(true, true)[i + "," + n]){
                             let b = new Board(false, data);
 
                         }
                         b.move(i, n, a[0], a[1]);
-
                         if (b.isEqual(b.pieces, data.pieces)) {
                             //console.log("same");
                             continue;
@@ -198,8 +197,10 @@ class EndNode {
                             break;
                         case "Rook":
                             score += 100 * (y.black ? 1 : -1);
+                            break;
                         case "Pawn":
                             score += 20 * (y.black ? 1 : -1);
+                            break;
                     }
                 }
             }

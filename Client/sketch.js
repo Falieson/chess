@@ -46,11 +46,12 @@ function mousePressed() {
 }
 
 function loadBoard(newBoard) {
-    history = board;
+    history = new Board(false, board);
     board = newBoard;
 }
 
 function resetBoard() {
     board = history;
     history = undefined;
+    debugger;
 }
