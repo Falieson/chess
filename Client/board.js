@@ -241,10 +241,10 @@ class Board {
             }
         }
 
-        if(!this.original && (this.pieces[x][y].pieceType == "King" || this.pieces[x][y].pieceType == "Rook")){
+        if (!this.original && (this.pieces[x][y].pieceType == "King" || this.pieces[x][y].pieceType == "Rook")) {
             //console.log("Check for castling");
             let castlingMoves = this.possCastling();
-            for(let a of castlingMoves){
+            for (let a of castlingMoves) {
                 result.push(a);
             }
         }
@@ -256,14 +256,14 @@ class Board {
         }
     }
 
-    possCastling(){
-        let y = this.currentlyWhite ? 7: 0;
+    possCastling() {
+        let y = this.currentlyWhite ? 7 : 0;
         let moves = [];
 
-        if(this.castling(false, 4,y,0,y)){
+        if (this.castling(false, 4, y, 0, y)) {
             moves.push(["c", 4, y, 0, y]);
         }
-        if(this.castling(false, 4, y, 7, y)){
+        if (this.castling(false, 4, y, 7, y)) {
             moves.push(["c", 4, y, 7, y]);
         }
 
@@ -588,7 +588,7 @@ class Board {
             }
         }
 
-        if(ret){
+        if (ret) {
             return checkMoves;
         } else {
             this.checkMoves = checkMoves;
@@ -634,5 +634,13 @@ class Board {
         }
         ////console.log(this.includes2D(gridX, gridY));
         ////console.log(gridX + " " + gridY + "  " + this.possibleMoves[0][0] + " " + this.possibleMoves[0][1]);
+    }
+
+    loop(loopFunc, ...args) {
+        for (let x of this.pieces) {
+            for (let y of x) {
+                loopFunc(y, args);
+            }
+        }
     }
 }

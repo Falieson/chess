@@ -4,7 +4,6 @@ let history;
 let pieceJSON;
 let sprite;
 let mainSprite;
-let algo;
 
 let playerTurn = true;
 
@@ -19,7 +18,6 @@ function setup() {
     mainSprite = new Sprite();
     mainSprite.resize(SIZE);
     board = new Board(false);
-    algo = new Algorithm();
 }
 
 function draw() {
@@ -28,15 +26,11 @@ function draw() {
     board.draw();
 
     if (!board.currentlyWhite) {
-        algo.move();
-        console.log("Generating ai moves: " + algo.tree.bestMove + " " + algo.tree.bestMove.length);
-        loadBoard(algo.tree.bestMove[floor(Math.random() * (algo.tree.bestMove.length - 1))].data);
-        board.original = true;
+        let wait = Algorithm.minmax.alphaBeta(board, 2, -Infinity, Infinity, true);
+        loadBoard(Algorithm.minmax.alphaBetaBestPosition.data);
     }
 
-
 }
-
 
 function mousePressed() {
     if (playerTurn) {

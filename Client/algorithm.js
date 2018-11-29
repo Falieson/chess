@@ -1,210 +1,156 @@
-let constants = {};
-
-constants.MIN = -9999;
-constants.MAX = 9999;
-
-class Algorithm {
-    constructor() {
-        this.tree = new Tree(3);
-        console.log("Dede, tree done");
-        //console.log(this.alphabeta(this.tree.initialState, 2, -Infinity, Infinity, true));
-    }
-
-    rebuildTree() {
-        this.tree = new Tree(3);
-    }
-
-    move() {
-        this.rebuildTree();
-        this.tree.alphaBetaPruning(algo.tree.initialState, -Infinity, Infinity, 3);
-    }
-}
-
-class Tree {
-    constructor(ahead) {
-        this.recLevel = ahead || 2;
-        this.alpha = -Infinity;
-        this.beta = Infinity;
-        this.bestMove;
-        //console.log(this.recLevel);
-        this.initialState = new Node(this, new Board(false, board), undefined, 0);
-        console.log("Done");
-    }
-
-    alphaBetaPruning(node, alpha, beta, depth) {
-        if (depth == 0 || node instanceof EndNode) {
-            return node.sc;
-        }
-
-        if (node.data.currentlyWhite == false) {
-            return this.getMax(node, alpha, beta, depth);
-        } else {
-            return this.getMin(node, alpha, beta, depth);
-        }
-    }
-
-    getMax(node, alpha, beta, depth) {
-        let bestMove = [];
-
-        for (let n of node.nodes) {
-            let score = this.alphaBetaPruning(n, alpha, beta, depth - 1);
-            if (score > alpha) {
-                alpha = score;
-                bestMove = [n];
-            } else if (score == alpha) {
-                bestMove.push(n);
-            }
-
-            if (alpha >= beta) {
-                break;
-            }
-        }
-        if (bestMove) {
-            this.bestMove = bestMove;
-        }
-
-        return alpha;
-    }
-
-    getMin(node, alpha, beta, depth) {
-        for (let n of node.nodes) {
-            let score = this.alphaBetaPruning(n, alpha, beta, depth - 1);
-            if (score < beta) {
-                beta = score;
-            }
-            if (alpha >= beta) {
-                break;
-            }
-        }
-        return beta;
-    }
-}
 class Node {
-    constructor(tree, data, prevNode, recLevel) {
-        //console.log("Node: " + recLevel);
-        if (recLevel >= tree.recLevel) {
-            //console.log("Final countdown...");
-            return;
-        }
-        this.recLevel = recLevel;
+    constructor(data) {
         this.data = data;
-        this.nodes = [];
+        this.done = false;
+        this.black = !this.data.userPlaysBlack;
+    }
 
-        for (let i = 0; i < 8; i++) {
-            for (let n = 0; n < 8; n++) {
-                if (data.pieces[i][n]) {
-                    if(data.chB && !data.currentlyWhite){
-                        //console.log("Check Black");
-                        //console.log(data);
-                        //debugger;
-                        let b = new Board(false, data);
-                        for(let a of data.checkm8(true, true)[i + "," + n]){
-                            let b = new Board(false, data);
+    score() {
+        let score = {
+            "safe": 0
+        };
 
-                        }
-                        b.move(i, n, a[0], a[1]);
-                        if (b.isEqual(b.pieces, data.pieces)) {
-                            //console.log("same");
-                            continue;
-                        }
-                        if (recLevel < tree.recLevel - 1 && !b.cmW && !b.cmB) {
-                            //console.log("NN");
-                            this.nodes.push(new Node(tree, b, this, recLevel + 1));
-                        } else {
-                            //console.log("EN");
-                            this.nodes.push(new EndNode(b));
-                        }
+        if (this.black) {
+            if (this.data.cmB) {
+                return -Infinity;
+            }
+            if (this.data.chB) {
+                score.safe -= 350;
+            }
+            if (this.data.chW) {
+                score.safe += 350;
+            }
+        }
+        if (!this.black) {
+            if (this.data.cmW) {
+                return -Infinity;
+            }
+            if (this.data.chW) {
+                score.safe -= 350;
+            }
+            if (this.data.chW) {
+                score.safe += 350;
+            }
+        }
+        this.data.loop((cell, score) => {
+            if (cell) {
+                switch (cell.pieceType) {
+                    case "King":
+                        score.safe += 500 * cell.black !== this.black ? 1 : -1;
+                        break;
+                    case "Queen":
+                        score.safe += 400 * cell.black !== this.black ? 1 : -1;
+                        break;
+                    case "Bishop":
+                        score.safe += 250 * cell.black !== this.black ? 1 : -1;
+                        break;
+                    case "Knight":
+                        score.safe += 215 * cell.black !== this.black ? 1 : -1;
+                        break;
+                    case "Rook":
+                        score.safe += 300 * cell.black !== this.black ? 1 : -1;
+                        break;
+                    case "Pawn":
+                        score.safe += 50 * cell.black !== this.black ? 1 : -1;
+                        break;
+                }
+            }
+        }, score);
 
-                    } else {
-                        for (let a of data.getPossibleMoves(i, n, false, true)) {
-                            let b = new Board(false, data);
-                            if(a[0] === "c"){
-                                //console.log("Castling possibkle");
-                                b.castling(true, a[1], a[2], a[3], a[4]);
-                                if(!b.isEqual(b.pieces, data.pieces)){
-                                    this.nodes.push(new Node(tree, b, this, recLevel + 1));
-                                }
-                                continue;
-                            }
-                            b.move(i, n, a[0], a[1]);
-                            // if (b.cmW || b.cmB) {
-                            //     continue;
-                            // }
-                            if (b.isEqual(b.pieces, data.pieces)) {
-                                //console.log("same");
-                                continue;
-                            }
-                            if (recLevel < tree.recLevel - 1 && !b.cmW && !b.cmB) {
-                                //console.log("NN");
-                                this.nodes.push(new Node(tree, b, this, recLevel + 1));
-                            } else {
-                                //console.log("EN");
-                                this.nodes.push(new EndNode(b));
+        return score.safe;
+    }
+
+    isDone() {
+
+    }
+
+    getChildren() {
+        let children = [];
+        for (let x = 0; x < this.data.pieces.length; x++) {
+            for (let y = 0; y < this.data.pieces[0].length; y++) {
+                if (this.data.pieces[x][y]) {
+                    if (this.data.pieces[x][y].black !== this.data.userPlaysBlack) {
+                        for (let move of this.data.getPossibleMoves(x, y, false, true, true)) {
+                            let board = new Board(this.data.userPlaysBlack, this.data);
+                            board.move(x, y, move[0], move[1], false);
+                            if (!board.isEqual(this.data.pieces, board.pieces)) {
+                                children.push(new Node(board));
                             }
                         }
                     }
                 }
             }
         }
-        //this.score = tree.alphabeta(this, 2, alpha, beta, recLevel % 2 == 0);
-        //console.log("Dunn dunn dunn");
-    }
-    score() {
-        return "N/A";
+        return children;
     }
 }
 
-class EndNode {
-    constructor(b) {
-        this.data = b;
-        this.sc = this.score();
-        //this.pieces = b.pieces.map(arr => return arr.slice());
+
+let Algorithm = {};
+
+Algorithm.minmax = {};
+
+Algorithm.minmax.normal = function(position, depth, maximizingPlayer) {
+    if (!position.data) {
+        position = new Node(position);
+    }
+    if (depth == 0 || position.isDone()) {
+        return position.score();
     }
 
-    score() {
-        let b = this.data;
-        let score = 0;
-        b.checkm8();
-        if (b.cmB) {
-            return -Infinity;
+    if (maximizingPlayer) {
+        let maxEval = -Infinity;
+        for (let child of position.getChildren()) {
+            let eval = Algorithm.minmax.normal(child, depth - 1, false);
+            maxEval = Math.max(maxEval, eval);
         }
-        if (b.cmW) {
-            return Infinity;
+        return maxEval;
+    } else {
+        let minEval = Infinity;
+        for (let child of position.getChildren()) {
+            let eval = Algorithm.minmax.normal(child, depth - 1, true);
+            minEval = Math.min(minEval, eval);
         }
+        return minEval;
+    }
+}
 
-        if (b.chB) {
-            score -= 300;
-        }
-        if (b.chW) {
-            score += 300;
-        }
+Algorithm.minmax.alphaBetaBestPosition;
 
-        for (let x of b.pieces) {
-            for (let y of x) {
-                if (y) {
-                    switch (y.pieceType) {
-                        case "King":
-                            score += 400 * (y.black ? 1 : -1);
-                            break;
-                        case "Queen":
-                            score += 300 * (y.black ? 1 : -1);
-                            break;
-                        case "Bishop":
-                            score += 100 * (y.black ? 1 : -1);
-                            break;
-                        case "Knight":
-                            score += 100 * (y.black ? 1 : -1);
-                            break;
-                        case "Rook":
-                            score += 100 * (y.black ? 1 : -1);
-                            break;
-                        case "Pawn":
-                            score += 20 * (y.black ? 1 : -1);
-                            break;
-                    }
+Algorithm.minmax.alphaBeta = function(position, depth, alpha, beta, maximizingPlayer) {
+    if (!position.data) {
+        position = new Node(position);
+    }
+    if (depth == 0 || position.isDone()) {
+        return position.score();
+    }
+
+    if (maximizingPlayer) {
+        let maxEval = -Infinity;
+        for (let child of position.getChildren()) {
+            let eval = Algorithm.minmax.alphaBeta(child, depth - 1, alpha, beta, false);
+            maxEval = Math.max(maxEval, eval);
+            alpha = Math.max(alpha, maxEval);
+            if (alpha >= beta) {
+                //Pruning;
+                if (!Algorithm.minmax.alphaBetaBestPosition || child.score() > Algorithm.minmax.alphaBetaBestPosition.score()) {
+                    Algorithm.minmax.alphaBetaBestPosition = child;
                 }
+
+                break;
             }
         }
-        return score;
+        return maxEval;
+    } else {
+        let minEval = Infinity;
+        for (let child of position.getChildren()) {
+            let eval = Algorithm.minmax.alphaBeta(child, depth - 1, alpha, beta, true);
+            minEval = Math.min(minEval, eval);
+            beta = Math.min(beta, minEval);
+            if (alpha >= beta) {
+                break;
+            }
+        }
+        return minEval;
     }
 }
