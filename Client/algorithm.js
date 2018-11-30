@@ -1,6 +1,8 @@
 class Node {
-    constructor(data) {
+    constructor(data, parent) {
         this.data = data;
+        this.parent = parent;
+        this.children;
         this.done = false;
         this.black = !this.data.userPlaysBlack;
     }
@@ -74,13 +76,14 @@ class Node {
                             let board = new Board(this.data.userPlaysBlack, this.data);
                             board.move(x, y, move[0], move[1], false);
                             if (!board.isEqual(this.data.pieces, board.pieces)) {
-                                children.push(new Node(board));
+                                children.push(new Node(board), this);
                             }
                         }
                     }
                 }
             }
         }
+        this.children = children.splice();
         return children;
     }
 }
@@ -117,7 +120,29 @@ Algorithm.minmax.normal = function(position, depth, maximizingPlayer) {
 
 Algorithm.minmax.alphaBetaBestPosition;
 
+Algorithm.minmax.alphaBetaAsyncIsRunning = false;
+
+Algorithm.minmax.alphaBetaResult = function(){
+    let bestPos = Algorithm.minmax.alphaBetaBestPosition;
+    let history = [];
+    while(bestPos.parent !== undefined){
+        history.push(bestPos);
+        bestPos = bestPos.parent;
+    }
+    console.log(bestPos);
+    return history[history.length-2]; // [...,bestPos,otherBoard]
+}
+
+Algorithm.minmax.alphaBetaAsync = function(position, depth, alpha, beta, maximizingPlayer){
+    return new Promise((resolve, reject) => {
+        Algorithm.minmax.alphaBetaAsyncIsRunning = true;
+        let cur = Algorithm.minmax.alphaBeta(position, depth, alpha, beta, maximizingPlayer);
+        resolve();
+    });
+}
+
 Algorithm.minmax.alphaBeta = function(position, depth, alpha, beta, maximizingPlayer) {
+    //console.log(depth);
     if (!position.data) {
         position = new Node(position);
     }
@@ -135,6 +160,7 @@ Algorithm.minmax.alphaBeta = function(position, depth, alpha, beta, maximizingPl
                 //Pruning;
                 if (!Algorithm.minmax.alphaBetaBestPosition || child.score() > Algorithm.minmax.alphaBetaBestPosition.score()) {
                     Algorithm.minmax.alphaBetaBestPosition = child;
+                    console.log("bestpos");
                 }
 
                 break;

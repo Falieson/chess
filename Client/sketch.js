@@ -25,9 +25,13 @@ function draw() {
 
     board.draw();
 
-    if (!board.currentlyWhite) {
-        let wait = Algorithm.minmax.alphaBeta(board, 2, -Infinity, Infinity, true);
-        loadBoard(Algorithm.minmax.alphaBetaBestPosition.data);
+    if (!board.currentlyWhite && !Algorithm.minmax.alphaBetaAsyncIsRunning) {
+        Algorithm.minmax.alphaBetaAsync(board, 2, -Infinity, Infinity, true).then(() => {
+            console.log(Algorithm.minmax.alphaBetaResult());
+
+            Algorithm.minmax.alphaBetaAsyncIsRunning = false;
+            loadBoard(Algorithm.minmax.alphaBetaResult().data);
+        });
     }
 
 }

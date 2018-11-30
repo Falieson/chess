@@ -15,6 +15,8 @@ class Board {
             this.kingWhite = c.kingWhite.slice();
             this.kingBlack = c.kingBlack.slice();
 
+            this.moves = c.moves;
+
             this.original = false;
 
             this.pieces = c.pieces.map(function(arr) {
@@ -22,6 +24,8 @@ class Board {
             });
             return;
         }
+
+        this.moves = 0;
 
         this.original = true;
 
@@ -289,6 +293,7 @@ class Board {
                     this.pieces[rX][rY].movesMade++;
                     this.pieces[kX][kY].movesMade++;
                 }
+                this.moves++;
                 this.pieces[rX + (kX > rX ? 1 : -1)][rY] = this.pieces[kX][kY];
                 this.pieces[kX][kY] = undefined;
                 this.pieces[kX + (kX > rX ? -2 : 1)][kY] = this.pieces[rX][rY];
@@ -372,6 +377,7 @@ class Board {
                 this.kingWhite = [tx, ty];
             }
         }
+        this.moves++;
         this.pieces[tx][ty] = this.pieces[x][y];
         this.pieces[x][y] = undefined;
         this.checkm8(!dontCheckM8);
