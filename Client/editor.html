@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+  <link rel="stylesheet" href="editorstylesheet.css" type="text/css" media="screen" charset="utf-8">
+  <script src="editor.js"></script>
+
+  <style>
+    body{
+      background: #515151;
+    }
+    #code {
+    }
+  </style>
+</head>
+
+<body>
+  <h1>EDITING THE CODE</h1>
+  <div class="editable" id="code" href></div>
+  <script>
+    let editor = new MediumEditor('.editable', {
+      autoLink: true,
+      placeholder: {
+        text: "",
+        hideOnClick: true
+      },
+      spellcheck: false
+    });
+    editor.subscribe("editableInput", () => PR.prettyPrint());
+  </script>
+</body>
+
+</html>
