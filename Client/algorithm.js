@@ -130,7 +130,7 @@ Algorithm.minmax.alphaBetaResult = function(){
         bestPos = bestPos.parent;
     }
     console.log(bestPos);
-    return history[history.length-2]; // [...,bestPos,otherBoard]
+    return history[history.length-2];
 }
 
 Algorithm.minmax.alphaBetaAsync = function(position, depth, alpha, beta, maximizingPlayer){
@@ -142,7 +142,6 @@ Algorithm.minmax.alphaBetaAsync = function(position, depth, alpha, beta, maximiz
 }
 
 Algorithm.minmax.alphaBeta = function(position, depth, alpha, beta, maximizingPlayer) {
-    //console.log(depth);
     if (!position.data) {
         position = new Node(position);
     }
@@ -157,10 +156,8 @@ Algorithm.minmax.alphaBeta = function(position, depth, alpha, beta, maximizingPl
             maxEval = Math.max(maxEval, eval);
             alpha = Math.max(alpha, maxEval);
             if (alpha >= beta) {
-                //Pruning;
                 if (!Algorithm.minmax.alphaBetaBestPosition || child.score() > Algorithm.minmax.alphaBetaBestPosition.score()) {
                     Algorithm.minmax.alphaBetaBestPosition = child;
-                    console.log("bestpos");
                 }
 
                 break;
